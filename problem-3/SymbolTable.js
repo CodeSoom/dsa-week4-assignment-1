@@ -9,10 +9,13 @@ class Node {
 
   n;
 
-  constructor(key, value, n) {
+  height;
+
+  constructor(key, value, n, height = 0) {
     this.key = key;
     this.value = value;
     this.n = n;
+    this.height = height;
   }
 }
 
@@ -46,7 +49,8 @@ class SymbolTable {
 
     if (key < node.key) {
       return this.#get(node.left, key);
-    } if (key > node.key) {
+    }
+    if (key > node.key) {
       return this.#get(node.right, key);
     }
     return node.value;
@@ -70,6 +74,8 @@ class SymbolTable {
     }
 
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height =
+      1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -87,6 +93,22 @@ class SymbolTable {
     }
 
     return this.#max(this.#root).key;
+  }
+
+  #min(node) {
+    if (node.left === undefined) {
+      return node;
+    }
+
+    return this.#min(node.left);
+  }
+
+  #max(node) {
+    if (node.right === undefined) {
+      return node;
+    }
+
+    return this.#max(node.right);
   }
 
   floor(key) {
@@ -143,7 +165,8 @@ class SymbolTable {
     const t = this.#size(node.left);
     if (t > k) {
       return this.#select(node.left, k);
-    } if (t < k) {
+    }
+    if (t < k) {
       return this.#select(node.right, k - t - 1);
     }
     return node;
@@ -160,7 +183,8 @@ class SymbolTable {
 
     if (key < node.key) {
       return this.#rank(node.left, key);
-    } if (key > node.key) {
+    }
+    if (key > node.key) {
       return 1 + this.#size(node.left) + this.#rank(node.right, key);
     }
     return this.#size(node.left);
@@ -181,6 +205,8 @@ class SymbolTable {
 
     node.left = this.#deleteMin(node.left);
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height =
+      1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -213,6 +239,9 @@ class SymbolTable {
     }
 
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+
+    node.height =
+      1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -254,20 +283,34 @@ class SymbolTable {
     }
   }
 
-  #min(node) {
-    if (node.left === undefined) {
-      return node;
-    }
+  /**
+   * 
+   * 
+    2. 트리의 높이를 구하는 height를 구현해 주세요. 이때 2가지 버전의 구현을 만들어
+   주세요. 첫 번째는 재귀로 실행할 때마다 새로 계산해서 높이를 구하는 버전을
+   만들어 주세요. 두 번째는 `size()`와 비슷하게 각 노드에 트리의 높이를 담는
+   필드 변수를 활용해서 구현한 버전을 만들어 주세요.
 
-    return this.#min(node.left);
+   */
+  height() {
+    return this.#height(this.#root);
   }
 
-  #max(node) {
-    if (node.right === undefined) {
-      return node;
+  /*
+  #height(node) {
+    if (node === undefined) {
+      return -1;
     }
 
-    return this.#max(node.right);
+    return 1 + Math.max(this.#height(node.left), this.#height(node.right));
+  }*/
+
+  #height(node) {
+    if (node === undefined) {
+      return -1;
+    }
+
+    return node.height;
   }
 }
 
