@@ -63,6 +63,33 @@ class SymbolTable {
   contains(key) {
     return !!this.get(key);
   }
+
+  values() {
+    return this.#items.map(({ item }) => item);
+  }
+
+  keys() {
+    const data = [...this.#items];
+    let index = 0;
+
+    return {
+      [Symbol.iterator]() {
+        return {
+          next() {
+            if (index >= data.length) {
+              return { done: true };
+            }
+
+            const { key } = data[index];
+
+            index += 1;
+
+            return { done: false, value: key };
+          },
+        };
+      },
+    };
+  }
 }
 
 module.exports = {
