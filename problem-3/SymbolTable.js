@@ -9,10 +9,13 @@ class Node {
 
   n;
 
-  constructor(key, value, n) {
+  h;
+
+  constructor(key, value, n, h = 0) {
     this.key = key;
     this.value = value;
     this.n = n;
+    this.h = h;
   }
 }
 
@@ -60,7 +63,7 @@ class SymbolTable {
 
   #put(node, key, value) {
     if (node === undefined) {
-      return new Node(key, value, 1);
+      return new Node(key, value, 1, 0);
     }
 
     if (key < node.key) {
@@ -71,7 +74,8 @@ class SymbolTable {
       node.value = value;
     }
 
-    node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.n = 1 + this.#size(node.left) + this.#size(node.right);
+    node.h = 1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -217,7 +221,8 @@ class SymbolTable {
       node.left = t.left;
     }
 
-    node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.n = 1 + this.#size(node.left) + this.#size(node.right);
+    node.h = 1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -280,10 +285,10 @@ class SymbolTable {
       return -1;
     }
 
-    // 재귀적인 방법으로 트리의 높이 구하기
     return this.#height(this.#root);
   }
 
+  // 재귀적인 방법으로 트리의 높이 구하기 1
   // #height(node, h = 0) {
   //   if (node === undefined) {
   //     return h - 1;
@@ -292,16 +297,26 @@ class SymbolTable {
   //   return Math.max(this.#height(node.left, 1 + h), this.#height(node.right, 1 + h));
   // }
 
+  // 재귀적인 방법으로 트리의 높이 구하기 2
+  // #height(node) {
+  //   if (!node) {
+  //     return 0;
+  //   }
+
+  //   if (!node.left && !node.right) {
+  //     return 0;
+  //   }
+
+  //   return 1 + Math.max(this.#height(node.left), this.#height(node.right));
+  // }
+
+  // eslint-disable-next-line class-methods-use-this
   #height(node) {
-    if (!node) {
-      return 0;
+    if (node === undefined) {
+      return -1;
     }
 
-    if (!node.left && !node.right) {
-      return 0;
-    }
-
-    return 1 + Math.max(this.#height(node.left), this.#height(node.right));
+    return node.h;
   }
 }
 
