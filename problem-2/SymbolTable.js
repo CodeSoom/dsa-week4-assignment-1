@@ -140,6 +140,20 @@ class SymbolTable {
   }
 
   keysRange(start, end) {
+    const i = this.rank(this.ceiling(start));
+    const j = this.rank(this.floor(end));
+
+    if (i > j || i < 0 || j >= this.#n) {
+      return [];
+    }
+
+    const keys = [];
+
+    for (let k = i; k <= j; k++) {
+      keys.push(this.#keys[k]);
+    }
+
+    return keys;
   }
 }
 
