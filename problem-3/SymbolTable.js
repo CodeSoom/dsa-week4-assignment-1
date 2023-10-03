@@ -23,10 +23,12 @@ class SymbolTable {
     return this.#root === undefined;
   }
 
+  // 테이블의 사이즈 반환 = 모든 노드의 개수
   size() {
     return this.#size(this.#root);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   #size(node) {
     if (node === undefined) {
       return 0;
@@ -160,9 +162,12 @@ class SymbolTable {
 
     if (key < node.key) {
       return this.#rank(node.left, key);
-    } if (key > node.key) {
+    }
+
+    if (key > node.key) {
       return 1 + this.#size(node.left) + this.#rank(node.right, key);
     }
+
     return this.#size(node.left);
   }
 
@@ -268,6 +273,35 @@ class SymbolTable {
     }
 
     return this.#max(node.right);
+  }
+
+  height() {
+    if (this.isEmpty()) {
+      return -1;
+    }
+
+    // 재귀적인 방법으로 트리의 높이 구하기
+    return this.#height(this.#root);
+  }
+
+  // #height(node, h = 0) {
+  //   if (node === undefined) {
+  //     return h - 1;
+  //   }
+
+  //   return Math.max(this.#height(node.left, 1 + h), this.#height(node.right, 1 + h));
+  // }
+
+  #height(node) {
+    if (!node) {
+      return 0;
+    }
+
+    if (!node.left && !node.right) {
+      return 0;
+    }
+
+    return 1 + Math.max(this.#height(node.left), this.#height(node.right));
   }
 }
 
