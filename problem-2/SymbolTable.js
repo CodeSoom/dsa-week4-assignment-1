@@ -130,6 +130,13 @@ class SymbolTable {
   }
 
   ceiling(key) {
+    const i = this.rank(key);
+
+    if (i >= this.#n) {
+      return;
+    }
+
+    return this.#keys[i];
   }
 
   keysRange(start, end) {
