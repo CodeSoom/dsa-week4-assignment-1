@@ -106,6 +106,13 @@ class SymbolTable {
   }
 
   contains(key) {
+    const i = this.rank(key);
+
+    if (key === this.#keys[i] && i < this.#n) {
+      return true;
+    }
+
+    return false;
   }
 
   floor(key) {
