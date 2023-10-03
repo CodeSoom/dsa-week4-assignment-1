@@ -116,6 +116,17 @@ class SymbolTable {
   }
 
   floor(key) {
+    const i = this.rank(key);
+
+    if (key === this.#keys[i]) {
+      return key;
+    }
+
+    if (i === 0) {
+      return;
+    }
+
+    return this.#keys[i - 1];
   }
 
   ceiling(key) {
