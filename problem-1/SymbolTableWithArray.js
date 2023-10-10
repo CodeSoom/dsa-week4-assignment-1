@@ -27,9 +27,7 @@ class SymbolTable {
   }
 
   get(key) {
-    const node = this.#items.find((item) => item.key === key);
-
-    return node?.item;
+    return this.#items.find((item) => item.key === key)?.item;
   }
 
   put(key, item) {
