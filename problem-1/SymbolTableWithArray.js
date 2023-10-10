@@ -32,7 +32,6 @@ class SymbolTable {
 
   put(key, item) {
     const curIndex = this.#findIndex(key);
-
     if (curIndex >= 0) {
       this.#items[curIndex].item = item;
 
