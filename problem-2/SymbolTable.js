@@ -150,16 +150,16 @@ class SymbolTable {
   }
 
   keysRange(start, end) {
-    const i = this.rank(this.ceiling(start));
-    const j = this.rank(this.floor(end));
+    const startIndex = this.rank(this.ceiling(start));
+    const endIndex = this.rank(this.floor(end));
 
-    if (i > j || i < 0 || j >= this.#n) {
+    if (startIndex > endIndex || startIndex < 0 || endIndex >= this.#n) {
       return [];
     }
 
     const keys = [];
 
-    for (let k = i; k <= j; k++) {
+    for (let k = startIndex; k <= endIndex; k++) {
       keys.push(this.#keys[k]);
     }
 
