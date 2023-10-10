@@ -124,3 +124,19 @@ test('심볼 테이블은 키에 해당하는 값을 저장한다', () => {
   expect(st.get('something')).toBeUndefined();
   expect(st.get('this')).toBeUndefined();
 });
+
+test('키를 순회할 수 있다', () => {
+  const st = new SymbolTable();
+
+  st.put('foo', 'bar');
+  st.put('something', 'that');
+  st.put('this', 'is');
+
+  const keys = [];
+
+  for (const key of st.keys()) {
+    keys.push(key);
+  }
+
+  expect(keys).toEqual(['foo', 'something', 'this']);
+});

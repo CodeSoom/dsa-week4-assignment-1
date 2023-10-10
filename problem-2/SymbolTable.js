@@ -63,18 +63,28 @@ class SymbolTable {
     this.#n--;
   }
 
-  rank(key, start = 0, end = this.#n - 1) {
-    if (start > end) {
-      return start;
+  rank(key) {
+    let mid = 0;
+    let start = 0;
+    let end = this.#n - 1;
+
+    while (start <= end) {
+      // 가운데 인덱스
+      mid = Math.floor((start + end) / 2);
+
+      if (this.#keys[mid] === key) {
+        return mid;
+      }
+
+      // 대소 비교로 범위 지정
+      if (this.#keys[mid] > key) {
+        end = mid - 1;
+      } else {
+        start = mid + 1;
+      }
     }
 
-    const mid = start + Math.floor((end - start) / 2);
-    if (key < this.#keys[mid]) {
-      return this.rank(key, start, mid - 1);
-    } if (key > this.#keys[mid]) {
-      return this.rank(key, mid + 1, end);
-    }
-    return mid;
+    return start;
   }
 
   min() {
@@ -106,15 +116,54 @@ class SymbolTable {
   }
 
   contains(key) {
+    const i = this.rank(key);
+
+    if (key === this.#keys[i] && i < this.#n) {
+      return true;
+    }
+
+    return false;
   }
 
   floor(key) {
+    const i = this.rank(key);
+
+    if (key === this.#keys[i]) {
+      return key;
+    }
+
+    if (i === 0) {
+      return;
+    }
+
+    return this.#keys[i - 1];
   }
 
   ceiling(key) {
+    const i = this.rank(key);
+
+    if (i >= this.#n) {
+      return;
+    }
+
+    return this.#keys[i];
   }
 
   keysRange(start, end) {
+    const startIndex = this.rank(this.ceiling(start));
+    const endIndex = this.rank(this.floor(end));
+
+    if (startIndex > endIndex || startIndex < 0 || endIndex >= this.#n) {
+      return [];
+    }
+
+    const keys = [];
+
+    for (let k = startIndex; k <= endIndex; k++) {
+      keys.push(this.#keys[k]);
+    }
+
+    return keys;
   }
 }
 
