@@ -71,7 +71,8 @@ class SymbolTable {
     const mid = start + Math.floor((end - start) / 2);
     if (key < this.#keys[mid]) {
       return this.rank(key, start, mid - 1);
-    } if (key > this.#keys[mid]) {
+    }
+    if (key > this.#keys[mid]) {
       return this.rank(key, mid + 1, end);
     }
     return mid;
@@ -106,15 +107,54 @@ class SymbolTable {
   }
 
   contains(key) {
+    return !!this.get(key);
   }
 
   floor(key) {
+    if (this.isEmpty()) {
+      return;
+    }
+
+    const i = this.rank(key);
+    if (i === 0) {
+      return this.#keys[i] === key ? key : undefined;
+    }
+
+    if (this.#keys[i] === key) {
+      return key;
+    }
+
+    return this.#keys[i - 1];
   }
 
   ceiling(key) {
+    if (this.isEmpty()) {
+      return;
+    }
+
+    const i = this.rank(key);
+    if (i >= this.#n) {
+      return;
+    }
+
+    return this.#keys[i];
   }
 
   keysRange(start, end) {
+    const startIndex = this.rank(start);
+    const endIndex = this.rank(end);
+
+    const arr = [];
+
+    for (let i = startIndex; i < endIndex; i++) {
+      arr.push(this.#keys[i]);
+    }
+
+    if (this.#keys[endIndex] === end) {
+      arr.push(end);
+    }
+
+    return arr;
   }
 }
 
