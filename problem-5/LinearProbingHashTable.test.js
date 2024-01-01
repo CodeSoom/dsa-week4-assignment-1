@@ -19,25 +19,106 @@ class LinearProbingHashTable {
   }
 
   hash(key) {
-    return this.#hash(key)
+    return this.#hash(key);
   }
 
   get(key) {
+    for (
+      let i = this.#hash(key);
+      this.#keys[i] !== undefined;
+      i = (i + 1) % this.#M
+    ) {
+      if (this.#keys[i] === key) {
+        return this.#values[i];
+      }
+    }
   }
 
   put(key, value) {
+    if (this.#N >= this.#M / 2) {
+      this.#resize(2 * this.#M);
+    }
+
+    let i;
+    for (
+      i = this.#hash(key);
+      this.#keys[i] !== undefined;
+      i = (i + 1) % this.#M
+    ) {
+      if (this.#keys[i] === key) {
+        this.#values[i] = value;
+        return;
+      }
+    }
+
+    this.#keys[i] = key;
+    this.#values[i] = value;
+    this.#N++;
   }
 
   delete(key) {
+    if (!this.contains(key)) {
+      return;
+    }
+
+    let i = this.#hash(key);
+    while (key !== this.#keys[i]) {
+      i = (i + 1) % this.#M;
+    }
+
+    this.#keys[i] = undefined;
+    this.#values[i] = undefined;
+
+    i = (i + 1) % this.#M;
+    while (this.#keys[i] !== undefined) {
+      const keyToRedo = this.#keys[i];
+      const valueToRedo = this.#values[i];
+
+      this.#keys[i] = undefined;
+      this.#values[i] = undefined;
+
+      this.#N--;
+
+      this.put(keyToRedo, valueToRedo);
+
+      i = (i + 1) % this.#M;
+    }
+
+    this.#N--;
+
+    if (this.#N > 0 && this.#N === this.#M / 8) {
+      this.#resize(this.#M / 2);
+    }
   }
 
   contains(key) {
+    return this.get(key) !== undefined;
   }
 
   keys() {
+    const keys = [];
+
+    for (let i = 0; i < this.#M; i++) {
+      if (this.#keys[i] !== undefined) {
+        keys.push(this.#keys[i]);
+      }
+    }
+
+    return keys;
   }
 
   #resize(capacity) {
+    const temp = new LinearProbingHashTable(capacity);
+
+    for (let i = 0; i < this.#M; i++) {
+      if (this.#keys[i] !== undefined) {
+        temp.put(this.#keys[i], this.#values[i]);
+      }
+    }
+
+    this.#keys = temp.#keys;
+    this.#values = temp.#values;
+    this.#M = temp.#M;
   }
 }
 
@@ -53,7 +134,7 @@ const randomString = (max) => {
   }
 
   return result;
-}
+};
 
 test('이미 있는 키 값에 값을 추가하면 이전 값을 덮어쓴다', () => {
   const st = new LinearProbingHashTable();
