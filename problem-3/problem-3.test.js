@@ -348,11 +348,12 @@ describe('height', () => {
     expect(st.height()).toBe(1);
 
     st.put('H', 4);
+    st.put('H', 10);
 
     expect(st.height()).toBe(2);
 
-    st.put('Z', 5);
+    st.delete('Z');
 
-    expect(st.height()).toBe(3);
+    expect(st.height()).toBe(2);
   });
 });
