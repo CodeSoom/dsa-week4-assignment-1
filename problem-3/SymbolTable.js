@@ -9,10 +9,13 @@ class Node {
 
   n;
 
-  constructor(key, value, n) {
+  height;
+
+  constructor(key, value, n, height = 0) {
     this.key = key;
     this.value = value;
     this.n = n;
+    this.height = height;
   }
 }
 
@@ -46,7 +49,8 @@ class SymbolTable {
 
     if (key < node.key) {
       return this.#get(node.left, key);
-    } if (key > node.key) {
+    }
+    if (key > node.key) {
       return this.#get(node.right, key);
     }
     return node.value;
@@ -67,9 +71,13 @@ class SymbolTable {
       node.right = this.#put(node.right, key, value);
     } else {
       node.value = value;
+      // 이 상황에서는 서브트리의 사이즈가 변하지 않기 때문에 return 처리를 해도 괜찮지 않을까 ?
+      return node;
     }
 
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height =
+      1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -143,7 +151,8 @@ class SymbolTable {
     const t = this.#size(node.left);
     if (t > k) {
       return this.#select(node.left, k);
-    } if (t < k) {
+    }
+    if (t < k) {
       return this.#select(node.right, k - t - 1);
     }
     return node;
@@ -160,7 +169,8 @@ class SymbolTable {
 
     if (key < node.key) {
       return this.#rank(node.left, key);
-    } if (key > node.key) {
+    }
+    if (key > node.key) {
       return 1 + this.#size(node.left) + this.#rank(node.right, key);
     }
     return this.#size(node.left);
@@ -181,6 +191,8 @@ class SymbolTable {
 
     node.left = this.#deleteMin(node.left);
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height =
+      1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -213,6 +225,8 @@ class SymbolTable {
     }
 
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height =
+      1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -268,6 +282,18 @@ class SymbolTable {
     }
 
     return this.#max(node.right);
+  }
+
+  height() {
+    return this.#height(this.#root);
+  }
+
+  #height(node) {
+    if (node === undefined) {
+      return -1;
+    }
+
+    return node.height;
   }
 }
 
