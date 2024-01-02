@@ -1,7 +1,10 @@
 class LinearProbingHashTable {
   #N = 0;
+
   #M = 0;
+
   #keys = [];
+
   #values = [];
 
   constructor(maxCount = 16) {
@@ -19,25 +22,95 @@ class LinearProbingHashTable {
   }
 
   hash(key) {
-    return this.#hash(key)
+    return this.#hash(key);
   }
 
   get(key) {
+    for (let i = this.#hash(key); this.#keys[i] !== undefined; i = (i + 1) % this.#M) {
+      if (this.#keys[i] === key) {
+        return this.#values[i];
+      }
+    }
   }
 
   put(key, value) {
+    let i = this.#hash(key);
+    while (true) {
+      if (this.#keys[i] === key) {
+        this.#values[i] = value;
+        return;
+      }
+
+      if (this.#keys[i] === undefined) {
+        this.#N++;
+        this.#keys[i] = key;
+        this.#values[i] = value;
+
+        if (this.#N >= this.#M / 2) {
+          this.#resize(this.#M * 2);
+        }
+
+        return;
+      }
+
+      i = (i + 1) % this.#M;
+    }
   }
 
   delete(key) {
+    for (let i = this.#hash(key); this.#keys[i] !== undefined; i = (i + 1) % this.#M) {
+      if (this.#keys[i] === key) {
+        // 찾았다.
+        this.#keys[i] = undefined;
+        this.#values[i] = undefined;
+        this.#N--;
+
+        i = (i + 1) % this.#M;
+        while (this.#keys[i] !== undefined) {
+          const beforeKey = this.#keys[i];
+          const beforeValuse = this.#values[i];
+
+          this.#keys[i] = undefined;
+          this.#values[i] = undefined;
+          this.#N--;
+          if (this.#N <= this.#M / 2) {
+            this.#resize(this.#M / 2);
+          }
+          this.put(beforeKey, beforeValuse);
+          i = (i + 1) % this.#M;
+        }
+        return;
+      }
+    }
   }
 
   contains(key) {
+    return this.get(key) !== undefined;
   }
 
   keys() {
+    return this.#keys.filter((key) => key !== undefined);
   }
 
+  // 크기를 2배로 키운다.
   #resize(capacity) {
+    // 이전 배열의 크기의 2배인 새로운 배열 하나 만든다.
+    // 이전에 배열을 꺼내서 다시 새로운 배열에 넣는다.
+
+    const newTable = new LinearProbingHashTable(capacity);
+
+    for (let i = 0; i < this.#M; i++) {
+      const key = this.#keys[i];
+      const value = this.#values[i];
+
+      if (key !== undefined) {
+        newTable.put(key, value);
+      }
+    }
+
+    this.#keys = newTable.#keys;
+    this.#values = newTable.#values;
+    this.#M = capacity;
   }
 }
 
@@ -53,7 +126,7 @@ const randomString = (max) => {
   }
 
   return result;
-}
+};
 
 test('이미 있는 키 값에 값을 추가하면 이전 값을 덮어쓴다', () => {
   const st = new LinearProbingHashTable();
