@@ -106,15 +106,56 @@ class SymbolTable {
   }
 
   contains(key) {
+    return !!this.get(key);
   }
 
   floor(key) {
+    if (this.isEmpty()) {
+      return;
+    }
+
+    const index = this.rank(key);
+
+    if (index === 0) {
+      return this.#keys[index] === key ? key : undefined;
+    }
+
+    if (key === this.#keys[index]) {
+      return key;
+    }
+
+    return this.#keys[index - 1];
   }
 
   ceiling(key) {
+    if (this.isEmpty()) {
+      return;
+    }
+
+    const index = this.rank(key);
+
+    if (index >= this.#n) {
+      return;
+    }
+
+    return this.#keys[index];
   }
 
   keysRange(start, end) {
+    const startIndex = this.rank(start);
+    const endIndex = this.rank(end);
+
+    const keys = [];
+
+    for (let index = startIndex; index < endIndex; index++) {
+      keys.push(this.#keys[index]);
+    }
+
+    if (end === this.#keys[endIndex]) {
+      keys.push(end);
+    }
+
+    return keys;
   }
 }
 
