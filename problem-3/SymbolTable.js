@@ -9,10 +9,13 @@ class Node {
 
   n;
 
-  constructor(key, value, n) {
+  height;
+
+  constructor(key, value, n, height = 0) {
     this.key = key;
     this.value = value;
     this.n = n;
+    this.height = height;
   }
 }
 
@@ -70,6 +73,7 @@ class SymbolTable {
     }
 
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height = 1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -181,6 +185,7 @@ class SymbolTable {
 
     node.left = this.#deleteMin(node.left);
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height = 1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -213,6 +218,7 @@ class SymbolTable {
     }
 
     node.n = this.#size(node.left) + this.#size(node.right) + 1;
+    node.height = 1 + Math.max(this.#height(node.left), this.#height(node.right));
     return node;
   }
 
@@ -268,6 +274,18 @@ class SymbolTable {
     }
 
     return this.#max(node.right);
+  }
+
+  height() {
+    return this.#height(this.#root);
+  }
+
+  #height(node) {
+    if (node === undefined) {
+      return -1;
+    }
+
+    return node.height;
   }
 }
 
