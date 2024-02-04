@@ -1,8 +1,17 @@
+const { SymbolTableWithLinkedList } = require('../problem-1/SymbolTableWithLinkedList');
+
 class SeperateChainingHashTable {
   #M;
 
+  #st;
+
   constructor(maxCount = 997) {
     this.#M = maxCount;
+
+    this.#st = new Array(maxCount);
+    for (let i = 0; i < this.#M; i++) {
+      this.#st[i] = new SymbolTableWithLinkedList();
+    }
   }
 
   #hash(key) {
@@ -14,22 +23,37 @@ class SeperateChainingHashTable {
   }
 
   hash(key) {
-    return this.#hash(key)
+    return this.#hash(key);
   }
 
   get(key) {
+    return this.#st[this.#hash(key)].get(key);
   }
 
   put(key, value) {
+    this.#st[this.#hash(key)].put(key, value);
   }
 
   delete(key, value) {
+    this.#st[this.#hash(key)].delete(key);
   }
-  
+
   contains(key) {
+    return this.get(key) !== undefined;
   }
 
   keys() {
+    const keyList = [];
+
+    this.#st.forEach((table) => {
+      const keys = table.keys();
+
+      for (const key of keys) {
+        keyList.push(key);
+      }
+    });
+
+    return keyList;
   }
 }
 
@@ -45,7 +69,7 @@ const randomString = (max) => {
   }
 
   return result;
-}
+};
 
 test('이미 있는 키 값에 값을 추가하면 이전 값을 덮어쓴다', () => {
   const st = new SeperateChainingHashTable();
